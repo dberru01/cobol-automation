@@ -11,7 +11,7 @@ export PATH=$PATH:/usr/lpp/zowe/cli/node/bin
 java -version
 
 # Set ZOWE_USERNAME
-ZOWE_USERNAME="Z66265" # Replace with the actual username
+ZOWE_USERNAME="Z66265"  # Replace with the actual username or dataset prefix
 
 # Change to the cobolcheck directory
 cd cobolcheck
@@ -45,14 +45,17 @@ run_cobolcheck() {
     else
       echo "Failed to copy CC##99.CBL to ${ZOWE_USERNAME}.CBL($program)"
     fi
-    else
-      echo "CC##99.CBL not found for $program"
+  else
+    echo "CC##99.CBL not found for $program"
   fi
   
   # Copy the JCL file if it exists
   if [ -f "${program}.JCL" ]; then
     if cp ${program}.JCL "//'${ZOWE_USERNAME}.JCL($program)'"; then
       echo "Copied ${program}.JCL to ${ZOWE_USERNAME}.JCL($program)"
+      # Submit job to run COBOL Check tests on the program!
+      submit ${program}.JCL
+      echo "Submitted job ${program}.JCL"
     else
       echo "Failed to copy ${program}.JCL to ${ZOWE_USERNAME}.JCL($program)"
     fi
@@ -62,7 +65,7 @@ run_cobolcheck() {
 }
 
 # Run for each program
-for program in NUMBERS EMPPAY DEPTPAY; do
+for program in ALPHA NUMBERS EMPPAY DEPTPAY; do
   run_cobolcheck $program
 done
 
